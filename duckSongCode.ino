@@ -1,4 +1,4 @@
-//#include "melody1"
+
 #include <Servo.h>   
 
 Servo myservo; // initialize servos
@@ -15,17 +15,8 @@ const int ledStand = 7;
 const int ledHouse = 8;
 const int ledStore = 9;
 const int ledStartButton = 10;
-//const int manStand = 4;
-//const int duckStand = 5;
-//const int duckHome = 6;
-// const int manStore = 8;
-
 const int servo1 = 11;
-// myservo2 goes to 10
-
-//const int dialogueButton = 11;
 const int storeGrapes = 12;
-// const int ledDialogueButton = 13;
 
 
 
@@ -43,13 +34,11 @@ void setup() {
   pinMode(duck, INPUT);
   pinMode(duckStand, INPUT);
   pinMode(startButton, INPUT);
-  // pinMode(dialogueButton, INPUT);
   pinMode(storeGrapes, INPUT);
   pinMode(ledHouse, OUTPUT);
   pinMode(ledStand, OUTPUT);
   pinMode(ledStore, OUTPUT);
   pinMode(ledStartButton, OUTPUT);
-  // pinMode(ledDialogueButton, OUTPUT);
   myservo.attach(servo1);
   pinMode(piezoPin, OUTPUT);
 
@@ -66,7 +55,6 @@ void loop() {
     buttonState++;
     interactionOne();
     interactionThree();
-    //interactionFive
   }
   interactionTwo();
   interactionTwelve();
@@ -135,14 +123,20 @@ void interactionThree() {
 }
 
 void interactionTwelve() {
+  //Player places duck and man at store
   if (actionVal == 4 && digitalRead(duck) == HIGH && digitalRead(man) == HIGH) {
+    //led store turns off
+    //action value updated
     digitalWrite(ledStore, LOW);
     actionVal = 5;
   }
 }
 
 void interactionThirteen() {
+  //Player places grapes on pressure plate
   if (actionVal == 5 && digitalRead(duck) == HIGH && digitalRead(man) == HIGH && digitalRead(storeGrapes) == HIGH) {
+    //sound effect plays
+    //action value updated
     soundEffects();
     actionVal = 6;
   }
@@ -160,9 +154,5 @@ void soundEffects() {
     tone(3, 10);
     noTone(3);
   }
-  // if (actionVal == #) {
-
-  // }
-
 }
 
