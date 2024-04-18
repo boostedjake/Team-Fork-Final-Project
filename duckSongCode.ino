@@ -2,8 +2,11 @@
 #include <Servo.h>   
 
 Servo myservo; // initialize servos
-Servo myservo2;
 
+
+//LED is yellow
+//plates are blue
+//button is green
 //initialize the wire for the "button"
 const int buttonPin = 2;
 const int piezoPin = 3;
@@ -21,9 +24,10 @@ const int storeGrapes = 12;
 
 
 //State change Detection / variables to change
-int buttonState;
-//int lastButtonState = 0;
-int actionVal;
+int buttonPushCounter = 0;  // counter for the number of button presses
+int buttonState = 0;        // current state of the button
+int lastButtonState = 0;    // previous state of the button
+int actionVal = 0;
 
 void setup() {
   
@@ -48,14 +52,33 @@ void setup() {
 
 void loop() {
   
+  
+
   preInteraction();
 
-  if (digitalRead(startButton) == HIGH) {
-    //set button +1
-    buttonState++;
-    interactionOne();
-    interactionThree();
+  // read the pushbutton input pin:
+  buttonState = digitalRead(startButton);
+
+  // compare the buttonState to its previous state
+  if (buttonState != lastButtonState) {
+    // if the state has changed, increment the counter
+    if (buttonState == HIGH) {
+      // if the current state is HIGH then the button went from off to on:
+      buttonPushCounter++;
+      Serial.println("on");
+      Serial.print("number of button pushes: ");
+      Serial.println(buttonPushCounter);
+      interactionOne();
+      interactionThree();
+    } else {
+      // if the current state is LOW then the button went from on to off:
+      Serial.println("off");
+    }
   }
+  // save the current state as the last state, for next time through the loop
+  lastButtonState = buttonState;
+  Serial.println(buttonPushCounter + " " + actionVal);
+
   interactionTwo();
   interactionTwelve();
   interactionThirteen();
@@ -70,14 +93,14 @@ void preInteraction() {
     //action value set to 1
     actionVal = 1;
     digitalWrite(ledStartButton, HIGH);
-
+    Serial.println("Pre-Interaction Successful!");
   }
 }
 
 void interactionOne() { 
 
   //player presses button
-  if (buttonState == 1 && actionVal == 1 && digitalRead(duck) == HIGH && digitalRead(man) == HIGH) {   
+  if (buttonPushCounter == 1 && actionVal == 1 && digitalRead(duck) == HIGH && digitalRead(man) == HIGH) {   
     //led start button turns off
     //led stand turns on
     //sound effect plays
@@ -86,7 +109,7 @@ void interactionOne() {
     digitalWrite(ledStand, HIGH);
     soundEffects();
     actionVal = 2;
-    
+    //Serial.println("Interaction One Successful!");
   }
 }  
 
@@ -99,13 +122,13 @@ void interactionTwo() {
     digitalWrite(ledStartButton, HIGH);
     digitalWrite(ledStand, LOW);
     actionVal = 3;
-
+    //Serial.println("Interaction Two Successful!");
   }
 }
 
 void interactionThree() {
   //Player presses button second time dialogue servo flips to grape
-  if (buttonState == 2 && actionVal == 3 && digitalRead(duckStand) == HIGH && digitalRead(man) == HIGH) {
+  if (buttonPushCounter == 2 && actionVal == 3 && digitalRead(duckStand) == HIGH && digitalRead(man) == HIGH) {
     //start button off
     //servo flips "grapes"
     digitalWrite(ledStartButton, LOW);
@@ -120,15 +143,17 @@ void interactionThree() {
   soundEffects();
   digitalWrite(ledStore, HIGH);
   actionVal = 4;
+  //Serial.println("Interaction Three Successful!");
 }
 
 void interactionTwelve() {
-  //Player places duck and man at store
+  //Player places  duck and man at store
   if (actionVal == 4 && digitalRead(duck) == HIGH && digitalRead(man) == HIGH) {
     //led store turns off
     //action value updated
     digitalWrite(ledStore, LOW);
     actionVal = 5;
+    //Serial.println("Interaction Twelve Successful!");
   }
 }
 
@@ -139,10 +164,10 @@ void interactionThirteen() {
     //action value updated
     soundEffects();
     actionVal = 6;
+    //Serial.println("Interaction Thirteen Successful!");
   }
 
 }
-
 
 
 void soundEffects() {
